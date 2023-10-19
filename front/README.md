@@ -10,8 +10,8 @@ Launching e2e test:
 
 > npm run e2e
 
-Generate coverage report (you should launch the application before):
-
+Generate coverage report (You must run the application or run the e2e tests at the same time):
+- You must run the e2e tests first
 > npm run e2e:coverage
 
 Report is available here:
@@ -21,8 +21,10 @@ Report is available here:
 #### Unitary test
 
 Launching test:
-
 > npm run test
+
+Report is available here:
+> front/coverage/jest/lcov-report/index.html
 
 for following change:
 
