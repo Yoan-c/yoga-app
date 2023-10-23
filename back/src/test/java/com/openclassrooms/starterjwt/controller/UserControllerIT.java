@@ -6,6 +6,7 @@ import com.openclassrooms.starterjwt.dto.UserDto;
 import com.openclassrooms.starterjwt.mapper.UserMapper;
 import com.openclassrooms.starterjwt.models.User;
 import com.openclassrooms.starterjwt.repository.UserRepository;
+import com.openclassrooms.starterjwt.security.services.UserDetailsImpl;
 import com.openclassrooms.starterjwt.services.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -19,6 +20,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MockMvcBuilder;
@@ -29,8 +33,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 
 @SpringBootTest
@@ -103,12 +106,16 @@ public class UserControllerIT {
     }
 
     @Test
-    @WithUserDetails("yoga@studio.com")
     @DisplayName("should delete a user")
     void giveIDUser_thenFindUserById_shouldDeleteUser() throws Exception {
         User user = new User();
-        user.setEmail("yoga@studio.com");
+        user.setEmail("test@test.fr");
+        UserDetailsImpl userDetails = new UserDetailsImpl(1L, "test@test.fr", "John",
+                "Doe", false, "password");
+        SecurityContext securityContext = mock(SecurityContext.class);
+        SecurityContextHolder.setContext(securityContext);
 
+        when(securityContext.getAuthentication()).thenReturn(new UsernamePasswordAuthenticationToken(userDetails, null));
         when(userRepository.findById(Long.parseLong(id))).thenReturn(Optional.of(user));
 
         mockMvc.perform(MockMvcRequestBuilders.delete("/api/user/{id}", id))
@@ -129,18 +136,22 @@ public class UserControllerIT {
     }
 
     @Test
-    @WithUserDetails("yoga@studio.com")
     @DisplayName("should return unauthorized status")
     void giveIDUser_thenFindUserById_shouldReturnUnauthorizedStatus() throws Exception {
         User user = new User();
         user.setEmail("t@test.fr");
+        UserDetailsImpl userDetails = new UserDetailsImpl(1L, "test@test.fr", "John",
+                "Doe", false, "password");
+        SecurityContext securityContext = mock(SecurityContext.class);
+        SecurityContextHolder.setContext(securityContext);
+        when(securityContext.getAuthentication()).thenReturn(new UsernamePasswordAuthenticationToken(userDetails, null));
 
         when(userRepository.findById(Long.parseLong(id))).thenReturn(Optional.of(user));
 
         mockMvc.perform(MockMvcRequestBuilders.delete("/api/user/{id}", id))
                 .andExpect(MockMvcResultMatchers.status().isUnauthorized());
 
-       // verify(userRepository).findById(Long.parseLong(id));
+        verify(userRepository).findById(Long.parseLong(id));
     }
 
     @Test
