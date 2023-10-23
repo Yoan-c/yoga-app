@@ -59,7 +59,7 @@ describe('Session user test e2e', () => {
   })
 
 
-  it('Should login as user and participate or unparticipate to a session', () => {
+  it('Should login as user and participate to a session', () => {
 
     cy.intercept('GET', 'api/session/1', {
       body: mockSession[0],
@@ -88,6 +88,48 @@ describe('Session user test e2e', () => {
     
  
     cy.get('button').contains('Participate').click()
+
+  })
+
+  it('Should login as user unparticipate to a session', () => {
+    const mockSessionUnparticipate = [{
+      id: 1,
+      name: "Session Zen",
+      description: "Session de Zen attitude",
+      date: mockDateSession,
+      teacher_id: 1,
+      users: [1],
+      createdAt: mockDateSession,
+      updatedAt: mockDateSession,
+    }]
+
+    cy.intercept('GET', 'api/session/1', {
+      body: mockSession[0],
+    }).as('firstSession')
+
+    cy.intercept('GET', 'api/session', {
+      body: mockSession,
+    })
+
+    cy.visit('/login')
+
+    cy.get('input[formControlName=email]').type("Yoan@studio.com")
+    cy.get('input[formControlName=password]').type(`${"test!1234"}{enter}{enter}`)
+
+    cy.url().should('include', '/sessions')
+    cy.intercept('GET', 'api/session/1', {
+      body : mockSessionUnparticipate[0]
+    })
+
+    cy.get('button').contains('Detail').click()
+
+
+
+
+    cy.url().should('include', '/sessions/detail/1')
+    
+ 
+    cy.get('button').contains('Do not participate').click()
 
   })
   

@@ -62,6 +62,7 @@ describe('Login test e2e', () => {
     cy.get('span').contains('Account').as('btnAccount')
 
     cy.get('@btnAccount').click()
+    cy.get('p').contains('You are admin')
   })
 
   it('should login and show account user', () => {

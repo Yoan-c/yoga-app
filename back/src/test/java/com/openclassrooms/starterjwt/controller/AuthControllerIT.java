@@ -108,8 +108,10 @@ public class AuthControllerIT {
         user.setEmail("test@test.fr");
         user.setAdmin(false);
 
-        UserDetailsImpl userDetails = new UserDetailsImpl(1L, "test@test.fr", "John", "Doe", false, "password");
-        when(authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword()))).thenReturn(authentication);
+        UserDetailsImpl userDetails = new UserDetailsImpl(1L,
+                "test@test.fr", "John", "Doe", false, "password");
+        when(authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getEmail(),
+                loginRequest.getPassword()))).thenReturn(authentication);
         when(authentication.getPrincipal()).thenReturn(userDetails);
         when(userRepository.findByEmail(userDetails.getUsername())).thenReturn(Optional.of(user));
         when(jwtUtils.generateJwtToken(authentication)).thenReturn("token");
