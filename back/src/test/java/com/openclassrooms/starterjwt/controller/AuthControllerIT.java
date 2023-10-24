@@ -67,7 +67,7 @@ public class AuthControllerIT {
     @Mock
     private Authentication authentication;
 
-    @Mock
+    @Autowired
     private JwtUtils jwtUtils;
 
     @Autowired
@@ -114,14 +114,13 @@ public class AuthControllerIT {
                 loginRequest.getPassword()))).thenReturn(authentication);
         when(authentication.getPrincipal()).thenReturn(userDetails);
         when(userRepository.findByEmail(userDetails.getUsername())).thenReturn(Optional.of(user));
-        when(jwtUtils.generateJwtToken(authentication)).thenReturn("token");
 
         mockMvc.perform(MockMvcRequestBuilders.post("/api/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(loginRequest)))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.content().contentType("application/json"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.token").value("token"));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.token").exists());
         verify(userRepository).findByEmail(userDetails.getUsername());
     }
 

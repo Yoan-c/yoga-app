@@ -1,6 +1,3 @@
-/**
- * @jest-environment jsdom
- */
 import {screen} from '@testing-library/angular'
 import { HttpClientModule } from '@angular/common/http';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
